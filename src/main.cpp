@@ -30,6 +30,24 @@ int main(int argc, char *[])
             fin >> windowHeight;
             std::cout << "Window width " << windowWidth << " and height " << windowHeight << " loaded...\n";
         }
+        else if (configCode == "Font")
+        {
+            // TODO: get font values
+        }
+        else if (configCode == "Circle")
+        {
+            // TODO: get circle values
+        }
+        else if (configCode == "Rectangle")
+        {
+            // TODO: get rectangle values
+        }
+        // commenting this out until we get through all the FIN's
+        // else
+        // {
+        //     perror("Something has been entered into the config which should not be here. Please check the file and try again...\n");
+        //     return -1;
+        // }
     }
 
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Bounce Shapes");
