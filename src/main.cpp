@@ -12,6 +12,7 @@ Purpose:    Load in shapes and settings from a config file.
 
 int main(int argc, char *[])
 {
+    // TODO: move things to methods out of main function
     std::vector<sf::CircleShape> circles;
     std::vector<sf::RectangleShape> rectangles;
     int windowWidth = 0, windowHeight = 0;
