@@ -14,7 +14,9 @@ int main(int argc, char *[])
 {
     // TODO: move things to methods out of main function
     std::vector<sf::CircleShape> circles;
-    std::vector<sf::RectangleShape> rectangles;
+    std::vector<sf::Vector2f> circleVelocities;
+
+    // std::vector<sf::RectangleShape> rectangles;
     int windowWidth = 0, windowHeight = 0;
     std::string fileName = "shapeconfig.txt";
 
@@ -34,14 +36,53 @@ int main(int argc, char *[])
         else if (configCode == "Font")
         {
             // TODO: get font values
+            // skip fonts for now
         }
         else if (configCode == "Circle")
         {
-            // TODO: get circle values
+            // define vars
+            std::string name;
+            int xPos, yPos;
+            float xSpeed, ySpeed;
+            int r, g, b;
+            int radius;
+
+            // get vals
+            fin >> name;
+            std::cout << "Name " << name << "\n";
+            fin >> xPos;
+            std::cout << "xPos " << xPos << "\n";
+            fin >> yPos;
+            std::cout << "yPos " << yPos << "\n";
+            fin >> xSpeed;
+            std::cout << "xSpeed " << xSpeed << "\n";
+            fin >> ySpeed;
+            std::cout << "ySpeed " << ySpeed << "\n";
+            fin >> r;
+            std::cout << "r " << r << "\n";
+            fin >> g;
+            std::cout << "g " << g << "\n";
+            fin >> b;
+            std::cout << "b " << b << "\n";
+            fin >> radius;
+            std::cout << "radius " << radius << "\n\n";
+
+            // make circles
+            sf::CircleShape circle(radius);
+            circle.setFillColor(sf::Color{r, g, b});
+            circle.setPosition(xPos, yPos);
+            circles.push_back(circle);
+
+            sf::Vector2f velocity(xSpeed, ySpeed);
+            circleVelocities.push_back(velocity);
         }
         else if (configCode == "Rectangle")
         {
             // TODO: get rectangle values
+            // 10 inputs per rectangle
+            /*
+            name, (pos) X Y, (spd) X Y, (col) R G B, (size) W H
+            */
         }
         // commenting this out until we get through all the FIN's
         // else
@@ -53,12 +94,6 @@ int main(int argc, char *[])
 
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Bounce Shapes");
     window.setFramerateLimit(60);
-    sf::CircleShape circle(25.f);
-    circle.setFillColor(sf::Color::Green);
-    circle.setPosition(50.0f, 50.0f);
-    sf::Vector2f velocity(1.0f, 2.0f);
-
-    int r = 0, g = 0, b = 0;
 
     // loop after read in values
     while (window.isOpen())
@@ -72,32 +107,43 @@ int main(int argc, char *[])
             case sf::Event::Closed:
                 window.close();
                 break;
-            case sf::Event::KeyPressed:
-                if (event.key.code == sf::Keyboard::C)
-                {
-                    std::cout << "Change color initiated\n";
-                    circle.setFillColor(sf::Color::Magenta);
-                }
-                break;
             default:
                 break;
             }
         }
 
-        if ((circle.getPosition().x + (circle.getRadius() * 2)) >= window.getSize().x || (circle.getPosition().x <= 0))
-        {
-            velocity.x = -velocity.x;
-        }
-
-        if ((circle.getPosition().y + (circle.getRadius() * 2)) >= window.getSize().y || (circle.getPosition().y <= 0))
-        {
-            velocity.y = -velocity.y;
-        }
-
-        circle.setPosition(circle.getPosition().x + velocity.x, circle.getPosition().y + velocity.y);
-
         window.clear();
-        window.draw(circle);
+        for (size_t i = 0; i < circles.size(); i++)
+        {
+            if ((circles[i].getPosition().x + (circles[i].getRadius() * 2)) >= window.getSize().x || (circles[i].getPosition().x <= 0))
+            {
+                circleVelocities[i].x = -circleVelocities[i].x;
+            }
+
+            if ((circles[i].getPosition().y + (circles[i].getRadius() * 2)) >= window.getSize().y || (circles[i].getPosition().y <= 0))
+            {
+                circleVelocities[i].y = -circleVelocities[i].y;
+            }
+
+            circles[i].setPosition(circles[i].getPosition().x + circleVelocities[i].x, circles[i].getPosition().y + circleVelocities[i].y);
+
+            window.draw(circles[i]);
+        }
+
+        // if ((circle.getPosition().x + (circle.getRadius() * 2)) >= window.getSize().x || (circle.getPosition().x <= 0))
+        // {
+        //     velocity.x = -velocity.x;
+        // }
+
+        // if ((circle.getPosition().y + (circle.getRadius() * 2)) >= window.getSize().y || (circle.getPosition().y <= 0))
+        // {
+        //     velocity.y = -velocity.y;
+        // }
+
+        // circle.setPosition(circle.getPosition().x + velocity.x, circle.getPosition().y + velocity.y);
+
+        // window.clear();
+        //  window.draw(circles[0]);
         window.display();
     }
 
