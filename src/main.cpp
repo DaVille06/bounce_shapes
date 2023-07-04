@@ -15,8 +15,9 @@ int main(int argc, char *[])
     // TODO: move things to methods out of main function
     std::vector<sf::CircleShape> circles;
     std::vector<sf::Vector2f> circleVelocities;
+    std::vector<sf::RectangleShape> rectangles;
+    std::vector<sf::Vector2f> rectangleVelocities;
 
-    // std::vector<sf::RectangleShape> rectangles;
     int windowWidth = 0, windowHeight = 0;
     std::string fileName = "shapeconfig.txt";
 
@@ -59,11 +60,9 @@ int main(int argc, char *[])
             fin >> ySpeed;
             std::cout << "ySpeed " << ySpeed << "\n";
             fin >> r;
-            std::cout << "r " << r << "\n";
             fin >> g;
-            std::cout << "g " << g << "\n";
             fin >> b;
-            std::cout << "b " << b << "\n";
+            std::cout << "RGB(" << r << " " << g << " " << b << ")\n";
             fin >> radius;
             std::cout << "radius " << radius << "\n\n";
 
@@ -78,11 +77,39 @@ int main(int argc, char *[])
         }
         else if (configCode == "Rectangle")
         {
-            // TODO: get rectangle values
-            // 10 inputs per rectangle
-            /*
-            name, (pos) X Y, (spd) X Y, (col) R G B, (size) W H
-            */
+            // define vars
+            std::string name;
+            int xPos, yPos;
+            float xSpeed, ySpeed;
+            int r, g, b;
+            int width, height;
+
+            // get vals
+            fin >> name;
+            std::cout << "Name " << name << "\n";
+            fin >> xPos;
+            fin >> yPos;
+            std::cout << "xPos " << xPos << " yPos " << yPos << "\n";
+            fin >> xSpeed;
+            fin >> ySpeed;
+            std::cout << "xSpeed " << xSpeed << " ySpeed " << ySpeed << "\n";
+            fin >> r;
+            fin >> g;
+            fin >> b;
+            std::cout << "RGB(" << r << " " << g << " " << b << ")\n";
+            fin >> width;
+            fin >> height;
+            std::cout << "width " << width << " height " << height << "\n\n";
+
+            // make rectangles
+            sf::Vector2f recSize(width, height);
+            sf::RectangleShape rectangle(recSize);
+            rectangle.setFillColor(sf::Color{r, g, b});
+            rectangle.setPosition(xPos, yPos);
+            rectangles.push_back(rectangle);
+
+            sf::Vector2f velocity(xSpeed, ySpeed);
+            rectangleVelocities.push_back(velocity);
         }
         // commenting this out until we get through all the FIN's
         // else
@@ -126,24 +153,26 @@ int main(int argc, char *[])
             }
 
             circles[i].setPosition(circles[i].getPosition().x + circleVelocities[i].x, circles[i].getPosition().y + circleVelocities[i].y);
-
             window.draw(circles[i]);
         }
 
-        // if ((circle.getPosition().x + (circle.getRadius() * 2)) >= window.getSize().x || (circle.getPosition().x <= 0))
-        // {
-        //     velocity.x = -velocity.x;
-        // }
+        for (size_t i = 0; i < rectangles.size(); i++)
+        {
+            auto recSize = rectangles[i].getSize();
+            if (rectangles[i].getPosition().x + recSize.x >= window.getSize().x || rectangles[i].getPosition().x <= 0)
+            {
+                rectangleVelocities[i].x = -rectangleVelocities[i].x;
+            }
 
-        // if ((circle.getPosition().y + (circle.getRadius() * 2)) >= window.getSize().y || (circle.getPosition().y <= 0))
-        // {
-        //     velocity.y = -velocity.y;
-        // }
+            if (rectangles[i].getPosition().y + recSize.y >= window.getSize().y || rectangles[i].getPosition().y <= 0)
+            {
+                rectangleVelocities[i].y = -rectangleVelocities[i].y;
+            }
 
-        // circle.setPosition(circle.getPosition().x + velocity.x, circle.getPosition().y + velocity.y);
+            rectangles[i].setPosition(rectangles[i].getPosition().x + rectangleVelocities[i].x, rectangles[i].getPosition().y + rectangleVelocities[i].y);
+            window.draw(rectangles[i]);
+        }
 
-        // window.clear();
-        //  window.draw(circles[0]);
         window.display();
     }
 
