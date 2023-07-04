@@ -19,6 +19,8 @@ int main(int argc, char *[])
 
     std::vector<sf::RectangleShape> rectangles;
     std::vector<sf::Vector2f> rectangleVelocities;
+    std::vector<std::string> rectangleNames;
+
     sf::Font font;
     int fontSize;
     int rFontColor, gFontColor, bFontColor;
@@ -126,6 +128,8 @@ int main(int argc, char *[])
             rectangle.setPosition(xPos, yPos);
             rectangles.push_back(rectangle);
 
+            rectangleNames.push_back(name);
+
             sf::Vector2f velocity(xSpeed, ySpeed);
             rectangleVelocities.push_back(velocity);
         }
@@ -183,7 +187,7 @@ int main(int argc, char *[])
             // circle text
             // to find text x position we have to adjust for the length of the string in pixels (divide that in half)
             // to find text y position we have to adjust for the height of the font in pixels (divide that in half)
-            float textX = (circles[i].getPosition().x + (circles[i].getRadius() - circleNames[i].length())) + circleVelocities[i].x;
+            float textX = (circles[i].getPosition().x + (circles[i].getRadius() - circleNames[i].length() * 4)) + circleVelocities[i].x;
             float textY = (circles[i].getPosition().y + (circles[i].getRadius() - fontSize / 2)) + circleVelocities[i].y;
             text.setPosition(textX, textY);
             text.setString(circleNames[i]);
@@ -206,6 +210,15 @@ int main(int argc, char *[])
 
             rectangles[i].setPosition(rectangles[i].getPosition().x + rectangleVelocities[i].x, rectangles[i].getPosition().y + rectangleVelocities[i].y);
             window.draw(rectangles[i]);
+
+            // rectangle text
+            // to find text x position we have to adjust for the length of the string in pixels (multiply that by 4 for pixels)
+            // to find text y position we have to adjust for the height of the font in pixels (divide that in half)
+            float textX = (rectangles[i].getPosition().x + (rectangles[i].getSize().x / 2 - (rectangleNames[i].length() * 4))) + rectangleVelocities[i].x;
+            float textY = (rectangles[i].getPosition().y + (rectangles[i].getSize().y / 2 - (fontSize / 2)) + rectangleVelocities[i].y);
+            text.setPosition(textX, textY);
+            text.setString(rectangleNames[i]);
+            window.draw(text);
         }
 
         window.display();
