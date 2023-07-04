@@ -86,7 +86,7 @@ int main(int argc, char *[])
 
             // make circles
             sf::CircleShape circle(radius);
-            circle.setFillColor(sf::Color{rCircleColor, gCircleColor, bCircleColor});
+            circle.setFillColor(sf::Color(rCircleColor, gCircleColor, bCircleColor));
             circle.setPosition(xPos, yPos);
             circles.push_back(circle);
 
@@ -124,7 +124,7 @@ int main(int argc, char *[])
             // make rectangles
             sf::Vector2f recSize(width, height);
             sf::RectangleShape rectangle(recSize);
-            rectangle.setFillColor(sf::Color{rRectangleColor, gRectangleColor, bRectangleColor});
+            rectangle.setFillColor(sf::Color(rRectangleColor, gRectangleColor, bRectangleColor));
             rectangle.setPosition(xPos, yPos);
             rectangles.push_back(rectangle);
 
@@ -164,7 +164,7 @@ int main(int argc, char *[])
 
         // text
         sf::Text text("", font, fontSize);
-        text.setFillColor(sf::Color{rFontColor, gFontColor, bFontColor});
+        text.setFillColor(sf::Color(rFontColor, gFontColor, bFontColor));
 
         // circles
         for (size_t i = 0; i < circles.size(); i++)
