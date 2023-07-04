@@ -163,9 +163,7 @@ int main(int argc, char *[])
         window.clear();
 
         // text
-        sf::Text text;
-        text.setFont(font);
-        text.setCharacterSize(fontSize);
+        sf::Text text("", font, fontSize);
         text.setFillColor(sf::Color{rFontColor, gFontColor, bFontColor});
 
         // circles
