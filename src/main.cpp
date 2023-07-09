@@ -23,14 +23,6 @@ int main(int argc, char *[])
 {
     std::vector<AssignmentShape> shapes;
 
-    std::vector<sf::CircleShape> circles;
-    std::vector<sf::Vector2f> circleVelocities;
-    std::vector<std::string> circleNames;
-
-    std::vector<sf::RectangleShape> rectangles;
-    std::vector<sf::Vector2f> rectangleVelocities;
-    std::vector<std::string> rectangleNames;
-
     sf::Font font;
     int fontSize;
     int rFontColor, gFontColor, bFontColor;
