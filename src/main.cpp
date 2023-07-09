@@ -1,6 +1,6 @@
 /*
 Author:     Nick Roberts
-Date:       6/30/23
+Date:       07/08/23
 Purpose:    Load in shapes and settings from a config file.
             Display them on the screen.
 */
@@ -10,9 +10,19 @@ Purpose:    Load in shapes and settings from a config file.
 #include <fstream>
 #include <vector>
 
+class AssignmentShape
+{
+public:
+    sf::CircleShape circle;
+    sf::RectangleShape rectangle;
+    sf::Vector2f velocity;
+    std::string shapeName;
+};
+
 int main(int argc, char *[])
 {
-    // TODO: move things to methods out of main function
+    std::vector<AssignmentShape> shapes;
+
     std::vector<sf::CircleShape> circles;
     std::vector<sf::Vector2f> circleVelocities;
     std::vector<std::string> circleNames;
@@ -88,12 +98,14 @@ int main(int argc, char *[])
             sf::CircleShape circle(radius);
             circle.setFillColor(sf::Color(rCircleColor, gCircleColor, bCircleColor));
             circle.setPosition(xPos, yPos);
-            circles.push_back(circle);
-
-            circleNames.push_back(name);
 
             sf::Vector2f velocity(xSpeed, ySpeed);
-            circleVelocities.push_back(velocity);
+
+            AssignmentShape aShape;
+            aShape.circle = circle;
+            aShape.velocity = velocity;
+            aShape.shapeName = name;
+            shapes.push_back(aShape);
         }
         else if (configCode == "Rectangle")
         {
@@ -126,12 +138,14 @@ int main(int argc, char *[])
             sf::RectangleShape rectangle(recSize);
             rectangle.setFillColor(sf::Color(rRectangleColor, gRectangleColor, bRectangleColor));
             rectangle.setPosition(xPos, yPos);
-            rectangles.push_back(rectangle);
-
-            rectangleNames.push_back(name);
 
             sf::Vector2f velocity(xSpeed, ySpeed);
-            rectangleVelocities.push_back(velocity);
+
+            AssignmentShape aShape;
+            aShape.rectangle = rectangle;
+            aShape.velocity = velocity;
+            aShape.shapeName = name;
+            shapes.push_back(aShape);
         }
         else
         {
@@ -167,56 +181,63 @@ int main(int argc, char *[])
         text.setFillColor(sf::Color(rFontColor, gFontColor, bFontColor));
 
         // circles
-        for (size_t i = 0; i < circles.size(); i++)
+        for (auto &shape : shapes)
         {
-            if ((circles[i].getPosition().x + (circles[i].getRadius() * 2)) >= window.getSize().x || (circles[i].getPosition().x <= 0))
+            if (shape.shapeName.rfind("C", 0) == 0)
             {
-                circleVelocities[i].x = -circleVelocities[i].x;
-            }
+                // do circles
+                if ((shape.circle.getPosition().x + (shape.circle.getRadius() * 2)) >= window.getSize().x || (shape.circle.getPosition().x <= 0))
+                {
+                    shape.velocity.x = -shape.velocity.x;
+                }
 
-            if ((circles[i].getPosition().y + (circles[i].getRadius() * 2)) >= window.getSize().y || (circles[i].getPosition().y <= 0))
+                if ((shape.circle.getPosition().y + (shape.circle.getRadius() * 2)) >= window.getSize().y || (shape.circle.getPosition().y <= 0))
+                {
+                    shape.velocity.y = -shape.velocity.y;
+                }
+
+                shape.circle.setPosition(shape.circle.getPosition().x + shape.velocity.x, shape.circle.getPosition().y + shape.velocity.y);
+                window.draw(shape.circle);
+
+                // circle text
+                // to find text x position we have to adjust for the length of the string in pixels (divide that in half)
+                // to find text y position we have to adjust for the height of the font in pixels (divide that in half)
+                float textX = (shape.circle.getPosition().x + (shape.circle.getRadius() - shape.shapeName.length() * 4)) + shape.velocity.x;
+                float textY = (shape.circle.getPosition().y + (shape.circle.getRadius() - fontSize / 2)) + shape.velocity.y;
+                text.setPosition(textX, textY);
+                text.setString(shape.shapeName);
+                window.draw(text);
+            }
+            else if (shape.shapeName.rfind("R", 0) == 0)
             {
-                circleVelocities[i].y = -circleVelocities[i].y;
+                // do rectangles
+                auto recSize = shape.rectangle.getSize();
+                if (shape.rectangle.getPosition().x + recSize.x >= window.getSize().x || shape.rectangle.getPosition().x <= 0)
+                {
+                    shape.velocity.x = -shape.velocity.x;
+                }
+
+                if (shape.rectangle.getPosition().y + recSize.y >= window.getSize().y || shape.rectangle.getPosition().y <= 0)
+                {
+                    shape.velocity.y = -shape.velocity.y;
+                }
+
+                shape.rectangle.setPosition(shape.rectangle.getPosition().x + shape.velocity.x, shape.rectangle.getPosition().y + shape.velocity.y);
+                window.draw(shape.rectangle);
+
+                // rectangle text
+                // to find text x position we have to adjust for the length of the string in pixels (multiply that by 4 for pixels)
+                // to find text y position we have to adjust for the height of the font in pixels (divide that in half)
+                float textX = (shape.rectangle.getPosition().x + (shape.rectangle.getSize().x / 2 - (shape.shapeName.length() * 4))) + shape.velocity.x;
+                float textY = (shape.rectangle.getPosition().y + (shape.rectangle.getSize().y / 2 - (fontSize / 2)) + shape.velocity.y);
+                text.setPosition(textX, textY);
+                text.setString(shape.shapeName);
+                window.draw(text);
             }
-
-            circles[i].setPosition(circles[i].getPosition().x + circleVelocities[i].x, circles[i].getPosition().y + circleVelocities[i].y);
-            window.draw(circles[i]);
-
-            // circle text
-            // to find text x position we have to adjust for the length of the string in pixels (divide that in half)
-            // to find text y position we have to adjust for the height of the font in pixels (divide that in half)
-            float textX = (circles[i].getPosition().x + (circles[i].getRadius() - circleNames[i].length() * 4)) + circleVelocities[i].x;
-            float textY = (circles[i].getPosition().y + (circles[i].getRadius() - fontSize / 2)) + circleVelocities[i].y;
-            text.setPosition(textX, textY);
-            text.setString(circleNames[i]);
-            window.draw(text);
-        }
-
-        // rectangles
-        for (size_t i = 0; i < rectangles.size(); i++)
-        {
-            auto recSize = rectangles[i].getSize();
-            if (rectangles[i].getPosition().x + recSize.x >= window.getSize().x || rectangles[i].getPosition().x <= 0)
+            else
             {
-                rectangleVelocities[i].x = -rectangleVelocities[i].x;
+                std::cout << "This is not a valid shape!";
             }
-
-            if (rectangles[i].getPosition().y + recSize.y >= window.getSize().y || rectangles[i].getPosition().y <= 0)
-            {
-                rectangleVelocities[i].y = -rectangleVelocities[i].y;
-            }
-
-            rectangles[i].setPosition(rectangles[i].getPosition().x + rectangleVelocities[i].x, rectangles[i].getPosition().y + rectangleVelocities[i].y);
-            window.draw(rectangles[i]);
-
-            // rectangle text
-            // to find text x position we have to adjust for the length of the string in pixels (multiply that by 4 for pixels)
-            // to find text y position we have to adjust for the height of the font in pixels (divide that in half)
-            float textX = (rectangles[i].getPosition().x + (rectangles[i].getSize().x / 2 - (rectangleNames[i].length() * 4))) + rectangleVelocities[i].x;
-            float textY = (rectangles[i].getPosition().y + (rectangles[i].getSize().y / 2 - (fontSize / 2)) + rectangleVelocities[i].y);
-            text.setPosition(textX, textY);
-            text.setString(rectangleNames[i]);
-            window.draw(text);
         }
 
         window.display();
